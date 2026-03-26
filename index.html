@@ -447,21 +447,88 @@
             color: #fff;
         }
 
-        /* ==================== Contact ==================== */
-        .contact-card {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: #fff;
-            padding: 20px 36px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            font-size: 1.05rem;
+        /* ==================== Contact & TODO ==================== */
+        .contact-todo-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
         }
 
-        .contact-card i { font-size: 1.4rem; color: var(--primary); }
-        .contact-card a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        .contact-card a:hover { text-decoration: underline; }
+        .todo-card, .contact-card-box {
+            background: #fff;
+            padding: 28px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i { color: var(--primary); }
+
+        /* TODO List */
+        .todo-list { list-style: none; }
+
+        .todo-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.98rem;
+        }
+
+        .todo-list li:last-child { border-bottom: none; }
+
+        .todo-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .tag-done {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .tag-coming {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .todo-list li.done { color: var(--text-secondary); }
+        .todo-list li.done .todo-text { text-decoration: line-through; }
+
+        /* Contact */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 1rem;
+        }
+
+        .contact-item i { font-size: 1.2rem; color: var(--primary); }
+        .contact-item a { color: var(--primary); text-decoration: none; font-weight: 500; }
+        .contact-item a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .contact-todo-wrapper {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
 
         /* ==================== Footer ==================== */
         footer {
@@ -515,7 +582,7 @@
                 <a >Kailai Feng</a>,
                 <a >Yuxiang Wei*</a>,
                 <a >Bo Chen</a>,
-                <a >Yang Pan</a>
+                <a >Yang Pan</a>,
                 <a >Hu Ye</a>,
                 <a >Songwei Liu</a>,
                 <a >Chenqian Yan</a>,
@@ -681,14 +748,58 @@
     </div>
 </section>
 
-<!-- ================ Contact ================ -->
+<!-- ================ TODO & Contact ================ -->
 <section id="contact">
-    <div class="container" style="text-align:center">
-        <h2 class="section-title">Contact</h2>
-        <p class="section-subtitle">If you have any questions, feel free to reach out.</p>
-        <div class="contact-card">
-            <i class="fa-solid fa-envelope"></i>
-            <span>Kailai Feng &mdash; <a href="mailto:klfeng1206@outlook.com">klfeng1206@outlook.com</a></span>
+    <div class="container">
+        <h2 class="section-title">Roadmap & Contact</h2>
+        <p class="section-subtitle">Our release plan and how to reach us.</p>
+
+        <div class="contact-todo-wrapper">
+            <!-- Left: TODO List -->
+            <div class="todo-card">
+                <div class="card-title"><i class="fa-solid fa-list-check"></i> Release TODO</div>
+                <ul class="todo-list">
+                    <li class="done">
+                        <span class="todo-tag tag-done">✓ Done</span>
+                        <span class="todo-text">Paper on arXiv</span>
+                    </li>
+                    <li>
+                        <span class="todo-tag tag-coming">Coming</span>
+                        <span class="todo-text">Inference code release</span>
+                    </li>
+                    <li>
+                        <span class="todo-tag tag-coming">Coming</span>
+                        <span class="todo-text">Model weights on HuggingFace</span>
+                    </li>
+                    <li>
+                        <span class="todo-tag tag-coming">Coming</span>
+                        <span class="todo-text">Android & iOS App</span>
+                    </li>
+                    <li>
+                        <span class="todo-tag tag-coming">Coming</span>
+                        <span class="todo-text">Online Demo</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right: Contact -->
+            <div class="contact-card-box">
+                <div class="card-title"><i class="fa-solid fa-address-book"></i> Contact</div>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">
+                    If you have any questions about this work, feel free to reach out.
+                </p>
+                <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Kailai Feng &mdash; <a href="mailto:klfeng1206@outlook.com">klfeng1206@outlook.com</a></span>
+                </div>
+                <!-- 如果需要多个联系人，复制下面这段 -->
+                <!--
+                <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Yuan Gao &mdash; <a href="mailto:xxx@bytedance.com">xxx@bytedance.com</a></span>
+                </div>
+                -->
+            </div>
         </div>
     </div>
 </section>
@@ -729,18 +840,18 @@ const genData = [
     },
     {
         src: "./assets/sample3.png",
-        prompt: "Whimsical children's storybook illustration—crafted in mixed media with expressive inky brushstrokes, delicate bleach splatters, and thick swirls of oil paint overlays.",
+        prompt: "Whimsical children's storybook illustration—crafted in mixed media with expressive inky brushstrokes, delicate bleach splatters, and thick swirls of oil paint overlays. Imagine a fantastical nighttime adventure: a charming horse, pieced together from textured, antique newspaper clippings in a patchwork collage style, gallops playfully under a deep indigo sky. Perched confidently on the horse’s back, a fluffy, oversized black cat with enormous, glowing yellow eyes grins mischievously, its fur rendered in wild, inky strokes. Beside them, a vibrantly coral-hued bird, small and luminous, darts through the air, trailing sparks of color. The moon hangs as a slender, silver crescent among wispy clouds, casting soft glimmers over a shadowy field where abstract, jet-black wildflowers bloom—each petal textured with ink and subtle orange gradients, echoing the night’s magical embrace. The entire scene is suffused with a storybook charm; each detail invites curiosity and wonder.",
         wide: false
     },
     {
         src: "./assets/sample2.png",
-        prompt: "Close up out of focus blurry photo of a stunning interpretation of the most artistically and aesthetically refined representation of a Mayan tribal female models, heavy tribal makeup and facial tattoos with lush red lips, large traditional Mayan headdress, looking to the side, butterflies and flowers jungle background, minimal desaturated color palette, soft vignette, f1.4 110 sec shutter, soft light",
+        prompt: "Close up out of focus blurry photo of a stunning interpretation of the most artistically and aesthetically refined representation of a Mayan tribal female models, heavy tribal makeup and facial tattoos with lush red lips, large traditional Mayan headdress, looking to the side, butterflies and flowers jungle background, minimal desaturated color palette, soft vignette, f1.4 110 sec shutter, soft light.",
         wide: true
     },
     
     {
         src: "./assets/sample4.png",
-        prompt: "Vast mountain valley at sunrise, emerald forests and waterfalls cascading into mist, golden rays of morning light breaking through clouds, serene atmosphere, ultra-detailed landscape, photorealistic yet painterly 3D look, depth and color harmony, cinematic composition, nature concept art, breathtaking realism, 8k",
+        prompt: "Vast mountain valley at sunrise, emerald forests and waterfalls cascading into mist, golden rays of morning light breaking through clouds, serene atmosphere, ultra-detailed landscape, photorealistic yet painterly 3D look, depth and color harmony, cinematic composition, nature concept art, breathtaking realism, 8k.",
         wide: false
     },
     {
@@ -750,7 +861,7 @@ const genData = [
     },
     {
         src: "./assets/sample6.png",
-        prompt: "A close-up of a fire spitting dragon, cinematic shot",
+        prompt: "A close-up of a fire spitting dragon, cinematic shot.",
         wide: true
     },
     {
@@ -760,7 +871,7 @@ const genData = [
     },
     {
         src: "./assets/sample8.png",
-        prompt: "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
+        prompt: "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k.",
         wide: false
     },
     {
@@ -770,7 +881,7 @@ const genData = [
     },
     {
         src: "./assets/sample10.png",
-        prompt: 'A cat holds a sign saying "Hello"',
+        prompt: 'A cat holds a sign saying "Hello".',
         wide: false
     },
 ];
