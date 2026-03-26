@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamLite: A Lightweight On-Device unified Model for Image Generation and Editing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ==================== CSS Reset & Base ==================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --max-width: 1100px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==================== Layout ==================== */
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+        section {
+            padding: 60px 0;
+        }
+
+        section:nth-child(even) {
+            background: var(--bg-alt);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 48px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ==================== Hero ==================== */
+        .hero {
+            text-align: center;
+            padding: 100px 0 70px;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .author-list {
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .author-list a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .author-list a:hover {
+            text-decoration: underline;
+        }
+
+        .author-sup { font-size: 0.75em; vertical-align: super; }
+
+        .affiliation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+        }
+
+        /* Link Buttons */
+        .link-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            color: var(--text);
+        }
+
+        .link-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .link-btn i { font-size: 1.1rem; }
+
+        .link-btn.primary-btn {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .link-btn.primary-btn:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+        /* ==================== Gallery ==================== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: flex-end;
+            padding: 16px;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay-text {
+            color: #fff;
+            font-size: 0.82rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Wide gallery items */
+        .gallery-item.wide {
+            grid-column: span 2;
+            aspect-ratio: 2/1;
+        }
+
+        /* ==================== Lightbox Modal ==================== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            animation: fadeIn 0.3s;
+        }
+
+        .lightbox.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .lightbox-content {
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            width: 100%;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        }
+
+        .lightbox-prompt {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-top: 16px;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .lightbox-prompt strong {
+            color: #93c5fd;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -44px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .lightbox-close:hover { opacity: 1; }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-nav:hover { background: rgba(255,255,255,0.3); }
+
+        .lightbox-prev { left: -64px; }
+        .lightbox-next { right: -64px; }
+
+        /* ==================== About Section ==================== */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+        }
+
+        .about-content p { margin-bottom: 16px; }
+
+        .highlight-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .highlight-list li {
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: #fff;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            font-size: 1rem;
+        }
+
+        .highlight-list li strong {
+            color: var(--text);
+        }
+
+        /* ==================== Architecture ==================== */
+        .arch-figure {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .arch-figure img {
+            max-width: 100%;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .arch-figure figcaption {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ==================== Tables ==================== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            background: #fff;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .table-wrapper caption {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            text-align: left;
+            color: var(--text);
+        }
+
+        .table-wrapper th {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .table-wrapper td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-wrapper tr:last-child td { border-bottom: none; }
+
+        .table-wrapper tbody tr:hover { background: #f1f5f9; }
+
+        .table-wrapper .highlight-row {
+            background: #eff6ff;
+            font-weight: 600;
+        }
+
+        .table-wrapper .highlight-row:hover { background: #dbeafe; }
+
+        /* ==================== BibTeX ==================== */
+        .bibtex-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 24px;
+            border-radius: var(--radius);
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .bibtex-block .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bibtex-block .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* ==================== Footer ==================== */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 900px) {
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+            .gallery-item.wide { grid-column: span 1; aspect-ratio: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero h2 { font-size: 1.1rem; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .lightbox { padding: 20px; }
+            .lightbox-prev { left: -10px; }
+            .lightbox-next { right: -10px; }
+            section { padding: 40px 0; }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================ Hero Section ================ -->
+<section class="hero">
+    <div class="container">
+        <!-- <span class="hero-badge">CVPR 2026</span> -->
+        <!-- <h1> DreamLite</h1> -->
+        <img class="hero-logo" src="./assets/dreamlite-logo.png" alt="DreamLite Logo">
+        <h2>A Lightweight On-Device unified Model for Image Generation and Editing</h2>
+
+        <div class="author-list">
+            <a href="#">Kailai Feng</a><span class="author-sup"></span>,
+            <a href="#">Yuxiang Wei</a><span class="author-sup"></span>,
+            <a href="#">Bo Chen</a><span class="author-sup"></span>,
+            <a href="#">Yang Pan</a><span class="author-sup"></span>,
+            <a href="#">Hu Ye</a><span class="author-sup"></span>,
+            <a href="#">Songwei Liu</a><span class="author-sup"></span>,
+            <a href="#">Chenqian Yan</a><span class="author-sup"></span>,
+            <a href="#">Yuan Gao</a><span class="author-sup"></span>
+        </div>
+        <div class="affiliation">
+            <sup></sup>Intelligent Creation Lab, ByteDance &nbsp;&nbsp; 
+            <!-- <sup>2</sup>Institution B &nbsp;&nbsp; -->
+            <!-- <span style="color: var(--text-secondary); font-size: 0.85rem;">*Equal Contribution</span> -->
+        </div>
+
+        <div class="link-buttons">
+            <a href="#" class="link-btn primary-btn"><i class="fa-solid fa-file-pdf"></i> Paper</a>
+            <a href="#" class="link-btn"><i class="fa-brands fa-github"></i> Code</a>
+            <a href="#" class="link-btn"><i class="fa-solid fa-face-smile"></i> HuggingFace</a>
+            <a href="#" class="link-btn"><i class="fa-solid fa-rocket"></i> Demo</a>
+            <a href="#" class="link-btn"><i class="fa-brands fa-youtube"></i> Video</a>
+            <a href="#" class="link-btn"><i class="fa-solid fa-database"></i> Dataset</a>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Image Gallery ================ -->
+<section id="gallery">
+    <div class="container">
+        <h2 class="section-title">Generated Samples</h2>
+        <p class="section-subtitle">Click on any image to view it in full resolution along with the generation prompt.</p>
+
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Gallery items will be injected by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- ================ Lightbox ================ -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="lightbox-nav lightbox-next" onclick="navLightbox(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        <img id="lightboxImg" src="" alt="">
+        <div class="lightbox-prompt">
+            <strong>Prompt</strong>
+            <span id="lightboxPrompt"></span>
+        </div>
+    </div>
+</div>
+
+<!-- ================ About ================ -->
+<section id="about">
+    <div class="container">
+        <h2 class="section-title">About</h2>
+        <div class="about-content">
+            <p>
+                We introduce <strong>Your Project Name</strong>, a novel framework for ... (describe your project here).
+                Our method achieves state-of-the-art performance across multiple benchmarks while maintaining
+                significantly lower computational costs. Core designs include:
+            </p>
+            <ul class="highlight-list">
+                <li><strong>Key Design 1:</strong> Description of the first key innovation or contribution.</li>
+                <li><strong>Key Design 2:</strong> Description of the second key innovation or contribution.</li>
+                <li><strong>Key Design 3:</strong> Description of the third key innovation or contribution.</li>
+                <li><strong>Key Design 4:</strong> Description of the fourth key innovation or contribution.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Architecture ================ -->
+<section id="architecture">
+    <div class="container">
+        <h2 class="section-title">Model Architecture</h2>
+        <p class="section-subtitle">Overview of the proposed framework and its key components.</p>
+
+        <figure class="arch-figure">
+            <!-- Replace src with your architecture diagram -->
+            <img src="https://placehold.co/1000x400/e2e8f0/64748b?text=Model+Architecture+Diagram" alt="Model Architecture">
+            <figcaption>Figure 1. Overall architecture of Your Project Name.</figcaption>
+        </figure>
+
+        <figure class="arch-figure">
+            <!-- Replace src with another figure -->
+            <img src="https://placehold.co/1000x350/e2e8f0/64748b?text=Training+Pipeline" alt="Training Pipeline">
+            <figcaption>Figure 2. Training pipeline and data processing flow.</figcaption>
+        </figure>
+    </div>
+</section>
+
+<!-- ================ Results / Tables ================ -->
+<section id="results">
+    <div class="container">
+        <h2 class="section-title">Main Results</h2>
+        <p class="section-subtitle">Quantitative comparison with state-of-the-art methods.</p>
+
+        <div class="table-wrapper">
+            <caption>Table 1. Comparison with existing methods on Benchmark-X.</caption>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Params</th>
+                        <th>Resolution</th>
+                        <th>FID &darr;</th>
+                        <th>CLIP Score &uarr;</th>
+                        <th>GenEval &uarr;</th>
+                        <th>Throughput &uarr;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Baseline A</td>
+                        <td>2.6B</td>
+                        <td>1024&times;1024</td>
+                        <td>12.4</td>
+                        <td>0.27</td>
+                        <td>0.62</td>
+                        <td>0.8 img/s</td>
+                    </tr>
+                    <tr>
+                        <td>Baseline B</td>
+                        <td>12B</td>
+                        <td>1024&times;1024</td>
+                        <td>10.1</td>
+                        <td>0.31</td>
+                        <td>0.67</td>
+                        <td>0.3 img/s</td>
+                    </tr>
+                    <tr>
+                        <td>Baseline C</td>
+                        <td>0.9B</td>
+                        <td>1024&times;1024</td>
+                        <td>11.8</td>
+                        <td>0.29</td>
+                        <td>0.63</td>
+                        <td>2.1 img/s</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td>Ours</td>
+                        <td>0.6B</td>
+                        <td>1024&times;1024</td>
+                        <td><strong>6.8</strong></td>
+                        <td><strong>0.33</strong></td>
+                        <td><strong>0.72</strong></td>
+                        <td><strong>5.2 img/s</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-wrapper">
+            <caption>Table 2. Ablation study on key components.</caption>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Configuration</th>
+                        <th>Component A</th>
+                        <th>Component B</th>
+                        <th>Component C</th>
+                        <th>FID &darr;</th>
+                        <th>GenEval &uarr;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>w/o Component A</td>
+                        <td>&cross;</td>
+                        <td>&check;</td>
+                        <td>&check;</td>
+                        <td>9.2</td>
+                        <td>0.65</td>
+                    </tr>
+                    <tr>
+                        <td>w/o Component B</td>
+                        <td>&check;</td>
+                        <td>&cross;</td>
+                        <td>&check;</td>
+                        <td>8.7</td>
+                        <td>0.68</td>
+                    </tr>
+                    <tr>
+                        <td>w/o Component C</td>
+                        <td>&check;</td>
+                        <td>&check;</td>
+                        <td>&cross;</td>
+                        <td>8.1</td>
+                        <td>0.69</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td>Full Model (Ours)</td>
+                        <td>&check;</td>
+                        <td>&check;</td>
+                        <td>&check;</td>
+                        <td><strong>6.8</strong></td>
+                        <td><strong>0.72</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ================ BibTeX ================ -->
+<section id="bibtex">
+    <div class="container">
+        <h2 class="section-title">BibTeX</h2>
+        <div class="bibtex-block">
+            <button class="copy-btn" onclick="copyBibtex()"><i class="fa-regular fa-copy"></i> Copy</button>
+<pre id="bibtexCode">@article{yourname2026project,
+  title={Your Project Name: A Full Title Here},
+  author={Author One and Author Two and Author Three and Author Four},
+  journal={arXiv preprint arXiv:2603.XXXXX},
+  year={2026}
+}</pre>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Footer ================ -->
+<footer>
+    <div class="container">
+        <p>This website template is inspired by <a href="https://nvlabs.github.io/Sana/" target="_blank">Sana</a>.
+        Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.</p>
+    </div>
+</footer>
+
+<!-- ================ JavaScript ================ -->
+<script>
+// ---- Gallery Data ----
+// Replace these with your actual images and prompts
+const galleryData = [
+    {
+        src: "https://placehold.co/600x600/c7d2fe/3730a3?text=Sample+1",
+        prompt: "A cyberpunk cat with glowing neon eyes sitting on a rooftop at night, digital art, highly detailed, 4K resolution.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/1200x600/fecdd3/9f1239?text=Sample+2+Wide",
+        prompt: "The word 'SANA' made of colorful tropical flowers floating over a calm ocean at sunset, photorealistic.",
+        wide: true
+    },
+    {
+        src: "https://placehold.co/600x600/d9f99d/365314?text=Sample+3",
+        prompt: "A young woman with golden hair and blue eyes, studio portrait, soft natural lighting, cinematic look.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/600x600/bfdbfe/1e40af?text=Sample+4",
+        prompt: "Astronaut floating in a cosmic nebula filled with vibrant purple and blue gases, surreal digital painting.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/600x600/fde68a/92400e?text=Sample+5",
+        prompt: "A vintage blue Volkswagen Beetle parked in front of a bright yellow wall, retro film photography style.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/1200x600/bbf7d0/14532d?text=Sample+6+Wide",
+        prompt: "A majestic sailing ship on stormy seas under dramatic lightning, oil painting style, epic composition.",
+        wide: true
+    },
+    {
+        src: "https://placehold.co/600x600/e9d5ff/581c87?text=Sample+7",
+        prompt: "An anime-style girl with freckles and big curious eyes looking directly at the camera, watercolor illustration.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/600x600/fecaca/991b1b?text=Sample+8",
+        prompt: "A steampunk mechanical owl perched on gears and cogs, copper and bronze tones, highly detailed 3D render.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/600x600/cffafe/155e75?text=Sample+9",
+        prompt: "Crystal clear turquoise underwater scene with tropical fish and coral reef, National Geographic style.",
+        wide: false
+    },
+    {
+        src: "https://placehold.co/600x600/fef3c7/78350f?text=Sample+10",
+        prompt: "A person standing alone on a vast beach at golden hour, silhouette against the sunset, minimalist photography.",
+        wide: false
+    },
+];
+
+// ---- Render Gallery ----
+const grid = document.getElementById('galleryGrid');
+galleryData.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = `gallery-item${item.wide ? ' wide' : ''}`;
+    div.onclick = () => openLightbox(i);
+    div.innerHTML = `
+        <img src="${item.src}" alt="Generated sample ${i+1}" loading="lazy">
+        <div class="overlay">
+            <span class="overlay-text">${item.prompt}</span>
+        </div>
+    `;
+    grid.appendChild(div);
+});
+
+// ---- Lightbox ----
+let currentIndex = 0;
+
+function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function navLightbox(dir) {
+    currentIndex = (currentIndex + dir + galleryData.length) % galleryData.length;
+    updateLightbox();
+}
+
+function updateLightbox() {
+    const item = galleryData[currentIndex];
+    document.getElementById('lightboxImg').src = item.src;
+    document.getElementById('lightboxPrompt').textContent = item.prompt;
+}
+
+// Close on backdrop click
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navLightbox(-1);
+    if (e.key === 'ArrowRight') navLightbox(1);
+});
+
+// ---- Copy BibTeX ----
+function copyBibtex() {
+    const text = document.getElementById('bibtexCode').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+        }, 2000);
+    });
+}
+</script>
+
+</body>
+</html>

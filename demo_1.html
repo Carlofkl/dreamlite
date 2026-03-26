@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamLite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ==================== CSS Reset & Base ==================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --max-width: 1100px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==================== Layout ==================== */
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+        section { padding: 60px 0; }
+        section:nth-child(even) { background: var(--bg-alt); }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 48px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ==================== Hero ==================== */
+        .hero {
+            text-align: center;
+            padding: 90px 0 70px;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
+        }
+
+        /* Logo Image replacing text title */
+        .hero-logo {
+            max-width: 480px;
+            width: 80%;
+            margin: 0 auto 28px;
+            display: block;
+        }
+
+        .hero h2 {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            white-space: nowrap;
+        }
+
+        /* Author lines */
+        .author-block {
+            margin-bottom: 8px;
+        }
+
+        .author-line {
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-bottom: 4px;
+            line-height: 1.8;
+        }
+
+        .author-line a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .author-line a:hover { text-decoration: underline; }
+
+        .affiliation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+        }
+
+        /* Link Buttons */
+        .link-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            color: var(--text);
+        }
+
+        .link-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .link-btn i { font-size: 1.1rem; }
+
+        .link-btn.primary-btn {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .link-btn.primary-btn:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+        /* ==================== Gallery ==================== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s;
+        }
+
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        .gallery-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: flex-end;
+            padding: 16px;
+        }
+
+        .gallery-item:hover .overlay { opacity: 1; }
+
+        .overlay-text {
+            color: #fff;
+            font-size: 0.82rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .gallery-item.wide {
+            grid-column: span 2;
+            aspect-ratio: 2/1;
+        }
+
+        /* ==================== Lightbox Modal ==================== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            animation: fadeIn 0.3s;
+        }
+
+        .lightbox.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .lightbox-content {
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            width: 100%;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        }
+
+        .lightbox-prompt {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-top: 16px;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .lightbox-prompt strong {
+            color: #93c5fd;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -44px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .lightbox-close:hover { opacity: 1; }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-nav:hover { background: rgba(255,255,255,0.3); }
+        .lightbox-prev { left: -64px; }
+        .lightbox-next { right: -64px; }
+
+        /* ==================== About Section ==================== */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+        }
+
+        .about-content p { margin-bottom: 16px; }
+
+        .highlight-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .highlight-list li {
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: #fff;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            font-size: 1rem;
+        }
+
+        .highlight-list li strong { color: var(--text); }
+
+        /* ==================== Architecture ==================== */
+        .arch-figure { text-align: center; margin-bottom: 40px; }
+
+        .arch-figure img {
+            max-width: 100%;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .arch-figure figcaption {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ==================== Tables ==================== */
+        .table-wrapper { overflow-x: auto; margin-bottom: 40px; }
+
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            background: #fff;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .table-wrapper caption {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            text-align: left;
+            color: var(--text);
+        }
+
+        .table-wrapper th {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .table-wrapper td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-wrapper tr:last-child td { border-bottom: none; }
+        .table-wrapper tbody tr:hover { background: #f1f5f9; }
+
+        .table-wrapper .highlight-row { background: #eff6ff; font-weight: 600; }
+        .table-wrapper .highlight-row:hover { background: #dbeafe; }
+
+        /* ==================== BibTeX ==================== */
+        .bibtex-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 24px;
+            border-radius: var(--radius);
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .bibtex-block .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bibtex-block .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* ==================== Contact ==================== */
+        .contact-section {
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        .contact-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 20px 36px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            font-size: 1.05rem;
+        }
+
+        .contact-card i {
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        .contact-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-card a:hover { text-decoration: underline; }
+
+        /* ==================== Footer ==================== */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer a { color: var(--primary); text-decoration: none; }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 900px) {
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+            .gallery-item.wide { grid-column: span 1; aspect-ratio: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h2 { font-size: 1rem; white-space: normal; }
+            .hero-logo { max-width: 320px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .lightbox { padding: 20px; }
+            .lightbox-prev { left: -10px; }
+            .lightbox-next { right: -10px; }
+            section { padding: 40px 0; }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================ Hero Section ================ -->
+<section class="hero">
+    <div class="container">
+        <!-- ★ 替换下方 src 为你的 logo 图片路径 ★ -->
+        <img class="hero-logo" src="./assets/logo.png" alt="DreamLite Logo">
+
+        <h2>A Lightweight On-Device Unified Model for Image Generation and Editing</h2>
+
+        <!-- 作者分两行 -->
+        <div class="author-block">
+            <div class="author-line">
+                <a href="#">Kailai Feng</a>,
+                <a href="#">*Yuxiang Wei</a>,
+                <a href="#">Bo Chen</a>,
+                <a href="#">Yang Pan</a>
+            </div>
+            <div class="author-line">
+                <a href="#">Hu Ye</a>,
+                <a href="#">Songwei Liu</a>,
+                <a href="#">Chenqian Yan</a>,
+                <a href="#">*Yuan Gao</a>
+            </div>
+        </div>
+        <div class="affiliation"> 
+            <div>
+                <a>Intelligent Creation Lab, ByteDance</a>
+            </div>
+            <div>
+                <a>* Corresponding Author</a>
+            </div>
+
+        <div class="link-buttons">
+            <a href="#" class="link-btn primary-btn"><i class="fa-solid fa-file-pdf"></i> Paper</a>
+            <a href="#" class="link-btn"><i class="fa-brands fa-github"></i> Code</a>
+            <a href="#" class="link-btn"><i class="fa-solid fa-face-smile"></i> HuggingFace</a>
+            <a href="#" class="link-btn"><i class="fa-solid fa-rocket"></i> Demo</a>
+            <!-- <a href="#" class="link-btn"><i class="fa-brands fa-youtube"></i> Video</a> -->
+            <a href="#" class="link-btn"><i class="fa-brands fa-android"></i> Android</a>
+            <a href="#" class="link-btn"><i class="fa-brands fa-apple"></i> iOS</a>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Image Gallery ================ -->
+<section id="gallery">
+    <div class="container">
+        <h2 class="section-title">Generated Samples</h2>
+        <p class="section-subtitle">Click on any image to view it in full resolution along with the generation prompt.</p>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+</section>
+
+<!-- ================ Lightbox ================ -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="lightbox-nav lightbox-next" onclick="navLightbox(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        <img id="lightboxImg" src="" alt="">
+        <div class="lightbox-prompt">
+            <strong>Prompt</strong>
+            <span id="lightboxPrompt"></span>
+        </div>
+    </div>
+</div>
+
+<!-- ================ About ================ -->
+<section id="about">
+    <div class="container">
+        <h2 class="section-title">About DreamLite</h2>
+        <div class="about-content">
+            <p>
+                In this paper, we propose <strong>DreamLite</strong>, a compact unified on-device diffusion model <strong>(0.39B)</strong> that supports 
+                both T2I generation and text-guided image editing within a single network. 
+                DreamLite is built on a pruned mobile U-Net backbone and unifies conditioning through <strong>In-Context</strong> spatial concatenation in the latent space.
+                To stabilize the training of this compact model, we introduce a <strong>Task-Progressive Joint</strong> pretraining strategy that sequentially targets T2I, editing, and joint tasks.
+                After SFT and RL, DreamLite outperforms existing on-device models and remaining competitive with several server-side models in both generation and editing tasks.
+                By employing step distillation, we further achieve 4-step inferencing, enabling our DreamLite could generate or edit a 1024 &times; 1024 image in <strong>less than 1s</strong> on a Xiaomi 14.
+            </p>
+            <p>
+                Our contributions are summarized as follows:
+            </p>
+            <ul class="highlight-list">
+                <!-- <li><strong>Key Design 2:</strong> Description of the second key innovation or contribution.</li> -->
+                <li>We propose, to the best of our knowledge, the first unified on-device model that supports both text-to-image generation and text-based image editing, eliminating the need to deploy two separate models.</li>
+                <li>We introduce an in-context conditioning mechanism for UNet to unify generation and editing, and propose a task-progressive joint pretraining scheme (i.e., T2I &rarr; Edit &rarr; Unified Joint Training) to stably train the model.</li>
+                <li>DreamLite achieves competitive performance on standard benchmarks and consistently outperforms prior mobile models. After deployment on mobile device, DreamLite could generate or edit a 1024 &times; 1024 image in less than 1s.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Architecture ================ -->
+<section id="architecture">
+    <div class="container">
+        <h2 class="section-title">Model Architecture</h2>
+        <p class="section-subtitle">Overview of the proposed framework and its key components.</p>
+
+        <figure class="arch-figure">
+            <img src="./assets/pipeline.png" alt="Model Architecture">
+            <figcaption>Figure 1. Overall architecture of DreamLite.</figcaption>
+        </figure>
+
+
+        <h2 class="section-title">Visual Results</h2>
+        <!-- <p class="section-subtitle">Overview of the proposed framework and its key components.</p> -->
+        <figure class="arch-figure">
+            <img src="./assets/mobile.png" alt="Training Pipeline">
+            <figcaption>Figure 2. Generation and Editing Results on Mobile Device.</figcaption>
+        </figure>
+
+        <!-- <figure class="arch-figure">
+            <img src="./assets/mobile.png" alt="Training Pipeline">
+            <figcaption>Figure 3. Generation and Editing Results on Mobile Device.</figcaption>
+        </figure>
+
+        <figure class="arch-figure">
+            <img src="./assets/mobile.png" alt="Training Pipeline">
+            <figcaption>Figure 4. Generation and Editing Results on Mobile Device.</figcaption>
+        </figure> -->
+    </div>
+</section>
+
+<!-- ================ Results / Tables ================ -->
+<section id="results">
+    <div class="container">
+        <h2 class="section-title">Main Results</h2>
+        <p class="section-subtitle">Quantitative comparison with state-of-the-art methods.</p>
+
+        <div class="table-wrapper">
+            <caption>Table 1. Comparison with existing methods on GenEval, DPG, ImgEdit and GEdit-EN Benchmarks.</caption>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th style="text-align: center; vertical-align: middle;">Params</th>
+                        <th style="text-align: center; vertical-align: middle;">GenEval &uarr;</th>
+                        <th style="text-align: center; vertical-align: middle;">DPG &uarr;</th>
+                        <th style="text-align: center; vertical-align: middle;">ImgEdit &uarr;</th>
+                        <th style="text-align: center; vertical-align: middle;">GEdit-EN-Q &uarr;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FLUX.1-Dev / Kontext</td>
+                        <td style="text-align: center; vertical-align: middle;">12B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.67</td>
+                        <td style="text-align: center; vertical-align: middle;">84.0</td>
+                        <td style="text-align: center; vertical-align: middle;">3.76</td>
+                        <td style="text-align: center; vertical-align: middle;">6.79</td>
+                    </tr>
+                    <tr>
+                        <td>BAGEL</td>
+                        <td style="text-align: center; vertical-align: middle;">7B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.82</td>
+                        <td style="text-align: center; vertical-align: middle;">85.1</td>
+                        <td style="text-align: center; vertical-align: middle;">3.42</td>
+                        <td style="text-align: center; vertical-align: middle;">7.20</td>
+                    </tr>
+                    <tr>
+                        <td>OmniGen2</td>
+                        <td style="text-align: center; vertical-align: middle;">4B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.80</td>
+                        <td style="text-align: center; vertical-align: middle;">83.6</td>
+                        <td style="text-align: center; vertical-align: middle;">3.44</td>
+                        <td style="text-align: center; vertical-align: middle;">6.79</td>
+                    </tr>
+                    <tr>
+                        <td>LongCat-Image / Edit</td>
+                        <td style="text-align: center; vertical-align: middle;">6B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.87</td>
+                        <td style="text-align: center; vertical-align: middle;">86.6</td>
+                        <td style="text-align: center; vertical-align: middle;">4.49</td>
+                        <td style="text-align: center; vertical-align: middle;">7.55</td>
+                    </tr>
+                    <tr>
+                        <td>DeepGen1.0</td>
+                        <td style="text-align: center; vertical-align: middle;">2B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.83</td>
+                        <td style="text-align: center; vertical-align: middle;">84.6</td>
+                        <td style="text-align: center; vertical-align: middle;">4.03</td>
+                        <td style="text-align: center; vertical-align: middle;">7.54</td>
+                    </tr>
+
+                    <tr>
+                        <td style="border-top: 1px double black;">SANA-1.6B</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">1.6B</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">0.67</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">84.8</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">-</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">-</td>
+                    </tr>
+                    <tr>
+                        <td>MEISSONIC</td>
+                        <td style="text-align: center; vertical-align: middle;">1B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.54</td>
+                        <td style="text-align: center; vertical-align: middle;">65.3</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                    </tr>
+                    <tr>
+                        <td>VIBE</td>
+                        <td style="text-align: center; vertical-align: middle;">1.6B</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                        <td style="text-align: center; vertical-align: middle;">3.85</td>
+                        <td style="text-align: center; vertical-align: middle;">7.28</td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 1px double black;">SANA-0.6B</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">0.6B</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">0.64</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">83.6</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">-</td>
+                        <td style="border-top: 1px double black; text-align: center; vertical-align: middle;">-</td>
+                    </tr>
+                    <tr>
+                        <td>SnapGen++ (small)</td>
+                        <td style="text-align: center; vertical-align: middle;">0.4B</td>
+                        <td style="text-align: center; vertical-align: middle;">0.66</td>
+                        <td style="text-align: center; vertical-align: middle;">85.2</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                    </tr>
+                    <tr>
+                        <td>EditMGT</td>
+                        <td style="text-align: center; vertical-align: middle;">0.96B</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                        <td style="text-align: center; vertical-align: middle;">2.89</td>
+                        <td style="text-align: center; vertical-align: middle;">6.33</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td>DreamLite (Ours)</td>
+                        <td style="text-align: center; vertical-align: middle;">0.39B</td>
+                        <td style="text-align: center; vertical-align: middle;"><strong>0.72</strong></td>
+                        <td style="text-align: center; vertical-align: middle;"><strong>85.8</strong></td>
+                        <td style="text-align: center; vertical-align: middle;"><strong>4.11</strong></td>
+                        <td style="text-align: center; vertical-align: middle;"><strong>6.88</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-wrapper">
+            <caption>Table 2. Ablation study on on GenEval and ImgEdit benchmarks. "TPJ" denotes "Task-progressive Joint".</caption>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Experiments</th>
+                        <th>Mechanism</th>
+                        <th>Training Stage</th>
+                        <th style="text-align: center; vertical-align: middle;">GenEval &uarr;</th>
+                        <th style="text-align: center; vertical-align: middle;">ImgEdit &uarr;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border-bottom: 1px solid black; text-align: left;">Text-to-image Pretraining</td>
+                        <td style="border-bottom: 1px solid black;"></td>
+                        <td style="border-bottom: 1px solid black;"></td>
+                        <td style="border-bottom: 1px solid black; text-align: center;">0.70</td>
+                        <td style="border-bottom: 1px solid black; text-align: center;">-</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2" style="border-bottom: 1px solid black; text-align: left;">Condition Mechanism</td>
+                        
+                        <td>Pix2Pix</td>
+                        <td>T2I &rarr; Edit</td>
+                        <td style="text-align: center; vertical-align: middle;">0.56</td>
+                        <td style="text-align: center; vertical-align: middle;">3.67</td>
+                    </tr>
+                    <tr>
+                        <td style="border-bottom: 1px solid black;">Pix2Pix</td>
+                        <td style="border-bottom: 1px solid black;">T2I &rarr; Edit &rarr; Unified</td>
+                        <td style="border-bottom: 1px solid black; text-align: center; vertical-align: middle;">0.61</td>
+                        <td style="border-bottom: 1px solid black; text-align: center; vertical-align: middle;">3.65</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4" style="border-bottom: 1px solid black; text-align: left;">Condition Mechanism</td>
+                        
+                        <td>In-context</td>
+                        <td>T2I &rarr; T2I</td>
+                        <td style="text-align: center; vertical-align: middle;">0.65</td>
+                        <td style="text-align: center; vertical-align: middle;">-</td>
+                    </tr>
+                    <tr>
+                        <td>In-context</td>
+                        <td>T2I &rarr; Edit</td>
+                        <td style="text-align: center; vertical-align: middle;">0.64</td>
+                        <td style="text-align: center; vertical-align: middle;">3.88</td>
+                    </tr>
+                    <tr>
+                        <td>In-context</td>
+                        <td>T2I &rarr; Unified</td>
+                        <td style="text-align: center; vertical-align: middle;">0.65</td>
+                        <td style="text-align: center; vertical-align: middle;">3.14</td>
+                    </tr>
+                    <tr>
+                        <td style="border-bottom: 1px solid black;">In-context</td>
+                        <td style="border-bottom: 1px solid black;">T2I &rarr; Edit &rarr; Unified</td>
+                        <td style="border-bottom: 1px solid black; text-align: center; vertical-align: middle;">0.71</td>
+                        <td style="border-bottom: 1px solid black; text-align: center; vertical-align: middle;">3.94</td>
+                    </tr>
+                    <tr>
+                        <td style="border-bottom: 1px solid black; text-align: left;">Reinforcement Learning</td>
+                        <td style="border-bottom: 1px solid black;">In-context</td>
+                        <td style="border-bottom: 1px solid black;">TPJ Pretrain &rarr; RLHF</td>
+                        <td style="border-bottom: 1px solid black; text-align: center; vertical-align: middle;"><strong>0.72</strong></td>
+                        <td style="border-bottom: 1px solid black; text-align: center; vertical-align: middle;"><strong>4.11</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Step Distillation</td>
+                        <td>In-context</td>
+                        <td>TPJ Pretrain &rarr; RLHF &rarr; DMD</td>
+                        <td style="text-align: center; vertical-align: middle;">0.70</td>
+                        <td style="text-align: center; vertical-align: middle;">3.8</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Contact ================ -->
+<section id="contact">
+    <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <p class="section-subtitle">If you have any questions, feel free to reach out.</p>
+        <div class="contact-card">
+            <i class="fa-solid fa-envelope"></i>
+            <span>Kailai Feng &mdash; <a href="mailto:klfeng1206@outlook.com">klfeng1206@outlook.com</a></span>
+        </div>
+    </div>
+</section>
+
+<!-- ================ BibTeX ================ -->
+<section id="bibtex">
+    <div class="container">
+        <h2 class="section-title">BibTeX</h2>
+        <div class="bibtex-block">
+            <button class="copy-btn" onclick="copyBibtex()"><i class="fa-regular fa-copy"></i> Copy</button>
+<pre id="bibtexCode">@article{feng2026dreamlite,
+  title={DreamLite: A Lightweight On-Device Unified Model for Image Generation and Editing},
+  author={Kailai Feng and Yuxiang Wei and Bo Chen and Yang Pan and Hu Ye and Songwei Liu and Chenqian Yan and Yuan Gao},
+  journal={arXiv preprint arXiv:2603.XXXXX},
+  year={2026}
+}</pre>
+        </div>
+    </div>
+</section>
+
+<!-- ================ Footer ================ -->
+<footer>
+    <div class="container">
+        <p>This website template is inspired by <a href="https://nvlabs.github.io/Sana/" target="_blank">Sana</a>.
+        Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.</p>
+    </div>
+</footer>
+
+<!-- ================ JavaScript ================ -->
+<script>
+// ---- Gallery Data ----
+// ★ 替换为你实际的图片和 prompt ★
+const galleryData = [
+    {
+        src: "./assets/sample1.png",
+        prompt: "Cute isometric 3D icon of a pastel mint green cactus with subtle smiling features, designed in clay texture. Soft lighting highlights the shape, set against a pale cream background. Clean composition with no branding.",
+        wide: false
+    },
+    {
+        src: "./assets/sample2.png",
+        prompt: "Close up out of focus blurry photo of a stunning interpretation of the most artistically and aesthetically refined representation of a Mayan tribal female models, \
+    heavy tribal makeup and facial tattoos with lush red lips, large traditional Mayan headdress, looking to the side, butterflies and flowers jungle background, minimal \
+    desaturated color palette, soft vignette, f1.4 110 sec shutter, soft light",
+        wide: true
+    },
+    {
+        src: "./assets/sample3.png",
+        prompt: "Whimsical children’s storybook illustration—crafted in mixed media with expressive inky brushstrokes, delicate bleach splatters, and thick swirls of oil paint overlays. Imagine a fantastical nighttime adventure: a charming horse, pieced together from textured, antique newspaper clippings in a patchwork collage style, gallops playfully under a deep indigo sky. Perched confidently on the horse’s back, a fluffy, oversized black cat with enormous, glowing yellow eyes grins mischievously, its fur rendered in wild, inky strokes. Beside them, a vibrantly coral-hued bird, small and luminous, darts through the air, trailing sparks of color. The moon hangs as a slender, silver crescent among wispy clouds, casting soft glimmers over a shadowy field where abstract, jet-black wildflowers bloom—each petal textured with ink and subtle orange gradients, echoing the night’s magical embrace. The entire scene is suffused with a storybook charm; each detail invites curiosity and wonder.",
+        wide: false
+    },
+    {
+        src: "./assets/sample4.png",
+        prompt: "vast mountain valley at sunrise, emerald forests and waterfalls cascading into mist, golden rays of morning light breaking through clouds, serene atmosphere, ultra-detailed landscape, photorealistic yet painterly 3D look, depth and color harmony, cinematic composition, nature concept art, breathtaking realism, 8k",
+        // prompt: "An close-up, high-detail portrait of a fluffy white cute cat against a solid black background. The focus is sharp on the cat's striking amber-yellow eyes with vertical pupils. The fur is pure white, long, and finely textured. A soft, clean light source illuminates the face from the side, emphasizing the pink nose and long white whiskers. Cinematic quality",
+        wide: false
+    },
+    {
+        src: "./assets/sample5.png",
+        prompt: "A small French bulldog puppy sitting at a café table wearing a cute scarf, looking at a croissant on a plate, latte art beside it, Parisian street in the background, soft cinematic lighting, high detail.",
+        wide: false
+    },
+    {
+        src: "./assets/sample6.png",
+        prompt: "a close-up of a fire spitting dragon, cinematic shot",
+        wide: true
+    },
+    {
+        src: "./assets/sample7.png",
+        prompt: "Make a funny collorfull cow and funnyy as an uix design.",
+        wide: false
+    },
+    {
+        src: "./assets/sample8.png",
+        // prompt: "a friendly green alien with big eyes wearing a blue hoodie walking on an empty street at night",
+        prompt: "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k", 
+        wide: false
+    },
+    {
+        src: "./assets/sample9.png",
+        prompt: "Moroccan man, portrait, dynamic pose, detailed hair texture, ornate, sharp focus, in the style of National Geographic, photoportrait, Cinematic.",
+        wide: false
+    },
+    {
+        src: "./assets/sample10.png",
+        prompt: "a cat holds a sign saying ”Hello”",
+        wide: false
+    },
+];
+
+// ---- Render Gallery ----
+const grid = document.getElementById('galleryGrid');
+galleryData.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = `gallery-item${item.wide ? ' wide' : ''}`;
+    div.onclick = () => openLightbox(i);
+    div.innerHTML = `
+        <img src="${item.src}" alt="Generated sample ${i+1}" loading="lazy">
+        <div class="overlay">
+            <span class="overlay-text">${item.prompt}</span>
+        </div>
+    `;
+    grid.appendChild(div);
+});
+
+// ---- Lightbox ----
+let currentIndex = 0;
+
+function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function navLightbox(dir) {
+    currentIndex = (currentIndex + dir + galleryData.length) % galleryData.length;
+    updateLightbox();
+}
+
+function updateLightbox() {
+    const item = galleryData[currentIndex];
+    document.getElementById('lightboxImg').src = item.src;
+    document.getElementById('lightboxPrompt').textContent = item.prompt;
+}
+
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+});
+
+document.addEventListener('keydown', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navLightbox(-1);
+    if (e.key === 'ArrowRight') navLightbox(1);
+});
+
+// ---- Copy BibTeX ----
+function copyBibtex() {
+    const text = document.getElementById('bibtexCode').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; }, 2000);
+    });
+}
+</script>
+
+</body>
+</html>
