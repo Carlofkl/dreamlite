@@ -244,6 +244,134 @@
             padding-left: 16px;
         }
 
+        /* ==================== Top Hiring Banner ==================== */
+        .top-banner {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            color: #e0e7ff;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 0.92rem;
+            position: relative;
+        }
+
+        .top-banner a {
+            color: #a5b4fc;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .top-banner a:hover { color: #fff; }
+
+        .top-banner i { margin-right: 6px; }
+
+        .top-banner .close-banner {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #818cf8;
+            font-size: 1.1rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .top-banner .close-banner:hover { opacity: 1; }
+
+        /* ==================== Phone Demo Video ==================== */
+        .demo-video-section {
+            padding: 60px 0;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            text-align: center;
+        }
+
+        .demo-video-section .section-title { color: #e0e7ff; }
+        .demo-video-section .section-subtitle { color: #94a3b8; }
+
+        .phone-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .phone-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 240px;
+            padding: 12px;
+            background: #000;
+            border-radius: 36px;
+            box-shadow:
+                0 0 0 3px #333,
+                0 0 0 6px #111,
+                0 20px 60px rgba(0,0,0,0.5),
+                0 0 80px rgba(37, 99, 235, 0.1);
+        }
+
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 5px;
+            background: #222;
+            border-radius: 3px;
+            z-index: 2;
+        }
+
+        .phone-mockup video {
+            width: 100%;
+            border-radius: 26px;
+            display: block;
+        }
+
+        .phone-label {
+            color: #e2e8f0;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+
+        .phone-sublabel {
+            color: #64748b;
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
+        .demo-speed-tag {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 800px) {
+            .phone-row { gap: 24px; }
+            .phone-mockup { width: 200px; }
+        }
+
+        @media (max-width: 500px) {
+            .phone-mockup { width: 160px; border-radius: 28px; padding: 10px; }
+            .phone-mockup video { border-radius: 20px; }
+        }
+
+
+
         /* ==================== Lightbox Modal ==================== */
         .lightbox {
             display: none;
@@ -511,23 +639,84 @@
         .todo-list li.done .todo-text { text-decoration: line-through; }
 
         /* Contact */
+        /* Contact Card */
+        .contact-card-box {
+            background: #fff;
+            padding: 28px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .contact-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+
+        .contact-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 0;
-            font-size: 1rem;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 0.98rem;
+            transition: background 0.2s;
         }
 
-        .contact-item i { font-size: 1.2rem; color: var(--primary); }
-        .contact-item a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        .contact-item a:hover { text-decoration: underline; }
+        .contact-item:hover { background: #f1f5f9; }
 
-        @media (max-width: 768px) {
-            .contact-todo-wrapper {
-                grid-template-columns: 1fr;
-                gap: 24px;
-            }
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .contact-icon.mail   { background: #dbeafe; color: #2563eb; }
+        .contact-icon.join   { background: #fce7f3; color: #db2777; }
+
+        .contact-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .contact-email {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.92rem;
+        }
+
+        .contact-email:hover { text-decoration: underline; }
+
+        /* Hiring banner */
+        .hiring-banner {
+            margin-top: 20px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #fdf2f8, #ede9fe);
+            border-radius: 10px;
+            border: 1px solid #f0abfc33;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #6b21a8;
+        }
+
+        .hiring-banner i {
+            font-size: 1.1rem;
+            color: #a855f7;
         }
 
         /* ==================== Footer ==================== */
@@ -571,6 +760,7 @@
 </head>
 <body>
 
+
 <!-- ================ Hero Section ================ -->
 <section class="hero">
     <div class="container">
@@ -602,6 +792,55 @@
             <!-- <a href="#" class="link-btn"><i class="fa-brands fa-android"></i> Android</a>
             <a href="#" class="link-btn"><i class="fa-brands fa-apple"></i> iOS</a> -->
         </div>
+    </div>
+</section>
+
+<!-- ================ Top Hiring Banner ================ -->
+<div class="top-banner" id="topBanner">
+    <i class="fa-solid fa-fire"></i>
+    We're recruiting passionate researchers in <strong>Efficient & On-device GenAI</strong>!
+    <a href="mailto:weiyuxiang@bytedance.com">Join Us →</a>
+    <button class="close-banner" onclick="document.getElementById('topBanner').style.display='none'">✕</button>
+</div>
+
+<!-- ================ Phone Demo Video ================ -->
+<section class="demo-video-section">
+    <div class="container">
+        <h2 class="section-title">On-Device Demo</h2>
+        <p class="section-subtitle">Real-time generation & editing on iPhone 17 Pro — no cloud, fully on-device.</p>
+
+        <div class="phone-row">
+            <!-- Phone 1: T2I Generation -->
+            <div class="phone-item">
+                <div class="phone-mockup">
+                    <video autoplay muted loop playsinline>
+                        <source src="./assets/demo1.mov" type="video/mp4">
+                    </video>
+                </div>
+                <div class="phone-label">Image Editing</div>
+            </div>
+
+            <!-- Phone 2: Image Editing -->
+            <div class="phone-item">
+                <div class="phone-mockup">
+                    <video autoplay muted loop playsinline>
+                        <source src="./assets/demo2.mov" type="video/mp4">
+                    </video>
+                </div>
+                <div class="phone-label">Style Transfer</div>
+            </div>
+
+            <!-- Phone 3: Style Transfer / Other -->
+            <div class="phone-item">
+                <div class="phone-mockup">
+                    <video autoplay muted loop playsinline>
+                        <source src="./assets/demo3.mov" type="video/mp4">
+                    </video>
+                </div>
+                <div class="phone-label">Background Change</div>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -783,22 +1022,34 @@
             </div>
 
             <!-- Right: Contact -->
+            <!-- Right: Contact -->
             <div class="contact-card-box">
                 <div class="card-title"><i class="fa-solid fa-address-book"></i> Contact</div>
-                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">
+                <p class="contact-desc">
                     If you have any questions about this work, feel free to reach out.
                 </p>
-                <div class="contact-item">
-                    <i class="fa-solid fa-envelope"></i>
-                    <span>Kailai Feng &mdash; <a href="mailto:klfeng1206@outlook.com">klfeng1206@outlook.com</a></span>
+
+                <div class="contact-items">
+                    <div class="contact-item">
+                        <div class="contact-icon mail"><i class="fa-solid fa-envelope"></i></div>
+                        <div>
+                            <div class="contact-name">Kailai Feng</div>
+                            <a class="contact-email" href="mailto:klfeng1206@outlook.com">klfeng1206@outlook.com</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon join"><i class="fa-solid fa-user-plus"></i></div>
+                        <div>
+                            <div class="contact-name">Join Us</div>
+                            <a class="contact-email" href="mailto:weiyuxiang@bytedance.com">weiyuxiang@bytedance.com</a>
+                        </div>
+                    </div>
                 </div>
-                <!-- 如果需要多个联系人，复制下面这段 -->
-                <!--
-                <div class="contact-item">
-                    <i class="fa-solid fa-envelope"></i>
-                    <span>Yuan Gao &mdash; <a href="mailto:xxx@bytedance.com">xxx@bytedance.com</a></span>
-                </div>
-                -->
+
+                <!-- <div class="hiring-banner">
+                    <i class="fa-solid fa-fire"></i>
+                    <span>We're recruiting passionate researchers in <strong>Efficient & On-device GenAI</strong>!</span>
+                </div> -->
             </div>
         </div>
     </div>
